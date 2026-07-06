@@ -1,0 +1,120 @@
+<!doctype html><html lang="uk"><meta charset="utf-8">
+<title>Timeline — Last Pirate — Early Access Update</title>
+<style>
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:#fff;color:#1a1f2e;font-size:13px}
+  header{padding:16px 22px 10px;border-bottom:1px solid #eef0f3}
+  h1{margin:0 0 3px;font-size:17px} .sub{color:#8a93a3;font-size:12.5px} .sub b{color:#5a6376}
+  .bar2{display:flex;gap:14px;align-items:center;padding:8px 22px;flex-wrap:wrap;font-size:12px;color:#667085;border-bottom:1px solid #f0f2f5}
+  .pill{background:#f3f4f7;border-radius:20px;padding:3px 12px;font-weight:600;color:#475467}
+  .legend{display:flex;gap:13px;flex-wrap:wrap;align-items:center}
+  .lg{display:inline-flex;align-items:center;gap:5px} .lg i{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .pakbtn{cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:700;color:#fff;background:var(--p);border:1.5px solid var(--p);border-radius:14px;padding:3px 12px;display:inline-flex;align-items:center;gap:6px;transition:all .12s;user-select:none}
+  .pakbtn::before{content:"";width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.95)}
+  .pakbtn:hover{filter:brightness(1.06)}
+  .pakbtn.off{background:transparent;color:#98a2b3;border-color:#d7dbe0}
+  .pakbtn.off::before{background:#cdd3da}
+  .tlwrap{overflow-x:auto;padding-bottom:6px}
+  .tl{width:1706px}
+  .hrow,.prow{display:flex;align-items:stretch}
+  .namecol,.namecol-wrap{position:sticky;left:0;z-index:5;background:#fff;width:210px;min-width:210px;border-right:1px solid #e6e9ee}
+  .hrow .namecol{display:flex;align-items:center;padding:0 14px;color:#8a93a3;font-weight:600;font-size:12px}
+  .months{display:flex} .mcell{font-size:12px;font-weight:700;color:#344054;padding:6px 8px;border-right:1px solid #eef0f3;white-space:nowrap;overflow:hidden}
+  .days{display:flex}
+  .dcell{display:flex;flex-direction:column;align-items:center;padding:4px 0;border-right:1px solid #eef0f3;border-bottom:1px solid #e6e9ee}
+  .dcell .wd{font-size:9px;color:#aeb6c2} .dcell .dn{font-size:12px;color:#475467;font-weight:600}
+  .dcell.we{background:#fafbfc} .dcell.we .dn{color:#c2c9d4}
+  .dcell.today{box-shadow:inset 0 3px 0 #0ea5e9} .dcell.today .dn{color:#0ea5e9;font-weight:800}
+  .dcell.ddl{background:#fef3f2} .dcell.ddl .dn{color:#d92d20;font-weight:800}
+  .prow{border-bottom:1px solid #f0f2f5}
+  .namecol-wrap{display:flex;align-items:center;gap:10px;padding:0 12px}
+  .av{width:30px;height:30px;border-radius:50%;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .pmeta{flex:1;min-width:0} .pn{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pr{font-size:11px;color:#aeb6c2} .ph{font-size:12px;color:#98a2b3;font-weight:600}
+  .track{position:relative;flex:0 0 auto}
+  .msrow .namecol{display:flex;align-items:center;font-size:11px;color:#aeb6c2;padding:0 14px}
+  .bg{position:absolute;inset:0}
+  .cell{position:absolute;top:0;bottom:0;border-right:1px solid #eef0f3}
+  .cell.we{background:#fafbfc}
+  .todayline{position:absolute;top:0;bottom:0;width:2px;background:#0ea5e9;z-index:2}
+  .vline{position:absolute;top:0;bottom:0;z-index:4;cursor:help;transition:opacity .12s}
+  .vline.major{width:3px;margin-left:-1px;background:#7a5af8;opacity:.38}
+  .vline.ddl{width:3px;margin-left:-1px;background:#d92d20;opacity:.55}
+  .vline.week{width:0;border-left:2px dashed #f59e0b;opacity:.45}
+  .vline:hover{opacity:.95}
+  .unavail{position:absolute;top:0;bottom:0;left:0;z-index:1;background:repeating-linear-gradient(45deg,#f5f6f8,#f5f6f8 5px,#eceef2 5px,#eceef2 10px)}
+  .bar{position:absolute;height:26px;background:var(--c);border-radius:6px;z-index:3;box-shadow:0 1px 2px rgba(16,24,40,.12);overflow:hidden;transition:opacity .15s,filter .15s}
+  .bar.dim{opacity:.12;filter:grayscale(1)}
+  .bar.done{opacity:.5;filter:grayscale(.35)}
+  .bar.done .bl{text-decoration:line-through;text-decoration-color:rgba(255,255,255,.7)}
+  .bl{position:absolute;left:8px;right:30px;top:0;line-height:26px;color:#fff;font-weight:600;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .br{position:absolute;right:6px;top:0;line-height:26px;color:#fff;font-weight:700;font-size:10.5px;opacity:.95}
+  .msrow{background:#fcfcfd;align-items:flex-start}
+  .msm{position:absolute;transform:translateX(3px);display:inline-flex;align-items:center;gap:3px;white-space:nowrap;cursor:help;z-index:6;line-height:1;background:#fcfcfd;padding:1px 4px;border-radius:4px}
+  .msm.msend{transform:translateX(-3px) translateX(-100%)}
+  .msm .msi{font-size:11px}
+  .msm .mst{font-size:10.5px;font-weight:700;color:#7c6ad6}
+  .msm.major .msi{color:#7a5af8} .msm.major .mst{color:#5b3fd6}
+  .msm.week .msi{color:#f59e0b} .msm.week .mst{color:#b45309;font-weight:600}
+  .msm.ddl .msi{color:#d92d20} .msm.ddl .mst{color:#d92d20}
+  .msm:hover{z-index:40}
+  .mstip{position:absolute;top:19px;left:0;display:none;width:215px;white-space:normal;background:#1a1f2e;color:#eef0f3;font-size:11px;font-weight:500;line-height:1.5;padding:8px 11px;border-radius:7px;box-shadow:0 6px 18px rgba(16,24,40,.3);z-index:40}
+  .mstip b{display:block;margin-bottom:4px;color:#fff;font-size:11.5px}
+  .msm.msend .mstip{left:auto;right:0}
+  .msm:hover .mstip{display:block}
+  .summary{display:flex;gap:24px;flex-wrap:wrap;padding:18px 22px 30px}
+  .card{background:#fff;border:1px solid #e6e9ee;border-radius:12px;padding:14px 18px}
+  .card h3{margin:0 0 10px;font-size:13px;color:#475467}
+  .card table{font-size:12px;border-collapse:collapse} .card td{padding:3px 14px 3px 0}
+  .big{font-size:22px;font-weight:800} .ok{color:#067647} .warn{color:#b54708}
+  .note{font-size:12px;color:#667085;max-width:330px;line-height:1.55}
+  code{background:#f3f4f7;padding:1px 5px;border-radius:4px;font-size:11px}
+</style>
+<header>
+  <h1>📆 Last Pirate — Early Access Update</h1>
+  <div class="sub">Реліз <b>31.07.2026</b> · TBD — дедлайн ще не визначено (плейсхолдер 31.07).</div>
+</header>
+<div class="bar2">
+  <span class="pill">148 год загалом</span>
+  <span class="pill">капасіті 8г/день · пн–пт · перелив ≤0г</span>
+  <div class="legend">
+    <span class="lg"><i style="background:repeating-linear-gradient(45deg,#f5f6f8,#f5f6f8 4px,#eceef2 4px,#eceef2 8px)"></i>недоступний</span>
+    <span class="lg">◆ віха</span><span class="lg">🏁 реліз</span>
+  </div>
+  <div class="legend"><b style="color:#475467">Паки:</b> <span class="lg" style="color:#98a2b3">(клік — затемнити пак)</span></div>
+</div>
+<div class="tlwrap">
+  <div class="tl">
+    <div class="hrow"><div class="namecol">Команда</div><div class="months"><div class="mcell" style="width:1496px">Липень 2026</div></div></div>
+    <div class="hrow"><div class="namecol"></div><div class="days"><div class="dcell today" style="width:212px"><span class="wd">Пн</span><span class="dn">6</span></div><div class="dcell" style="width:284px"><span class="wd">Вт</span><span class="dn">7</span></div><div class="dcell" style="width:52px"><span class="wd">Ср</span><span class="dn">8</span></div><div class="dcell" style="width:110px"><span class="wd">Чт</span><span class="dn">9</span></div><div class="dcell" style="width:110px"><span class="wd">Пт</span><span class="dn">10</span></div><div class="dcell we" style="width:52px"><span class="wd">Сб</span><span class="dn">11</span></div><div class="dcell we" style="width:52px"><span class="wd">Нд</span><span class="dn">12</span></div><div class="dcell" style="width:52px"><span class="wd">Пн</span><span class="dn">13</span></div><div class="dcell" style="width:52px"><span class="wd">Вт</span><span class="dn">14</span></div><div class="dcell" style="width:52px"><span class="wd">Ср</span><span class="dn">15</span></div><div class="dcell" style="width:52px"><span class="wd">Чт</span><span class="dn">16</span></div><div class="dcell" style="width:52px"><span class="wd">Пт</span><span class="dn">17</span></div><div class="dcell we" style="width:52px"><span class="wd">Сб</span><span class="dn">18</span></div><div class="dcell we" style="width:52px"><span class="wd">Нд</span><span class="dn">19</span></div><div class="dcell" style="width:52px"><span class="wd">Пн</span><span class="dn">20</span></div><div class="dcell" style="width:52px"><span class="wd">Вт</span><span class="dn">21</span></div><div class="dcell" style="width:52px"><span class="wd">Ср</span><span class="dn">22</span></div><div class="dcell" style="width:52px"><span class="wd">Чт</span><span class="dn">23</span></div><div class="dcell" style="width:52px"><span class="wd">Пт</span><span class="dn">24</span></div></div></div>
+    <div class="prow msrow"><div class="namecol">Віхи</div><div class="track" style="width:1496px;height:29px"><div class="bg" style="width:1496px"><div class="cell" style="left:0px;width:212px"></div><div class="cell" style="left:212px;width:284px"></div><div class="cell" style="left:496px;width:52px"></div><div class="cell" style="left:548px;width:110px"></div><div class="cell" style="left:658px;width:110px"></div><div class="cell we" style="left:768px;width:52px"></div><div class="cell we" style="left:820px;width:52px"></div><div class="cell" style="left:872px;width:52px"></div><div class="cell" style="left:924px;width:52px"></div><div class="cell" style="left:976px;width:52px"></div><div class="cell" style="left:1028px;width:52px"></div><div class="cell" style="left:1080px;width:52px"></div><div class="cell we" style="left:1132px;width:52px"></div><div class="cell we" style="left:1184px;width:52px"></div><div class="cell" style="left:1236px;width:52px"></div><div class="cell" style="left:1288px;width:52px"></div><div class="cell" style="left:1340px;width:52px"></div><div class="cell" style="left:1392px;width:52px"></div><div class="cell" style="left:1444px;width:52px"></div></div><div class="todayline" style="left:0px"></div></div></div>
+    <div class="prow" style="height:52px"><div class="namecol-wrap" style="height:52px"><div class="av" style="background:#7a5af8">PA</div><div class="pmeta"><div class="pn">Paul</div><div class="pr">3D Lead</div></div><div class="ph">40г</div></div><div class="track" style="width:1496px;height:52px"><div class="bg" style="width:1496px"><div class="cell" style="left:0px;width:212px"></div><div class="cell" style="left:212px;width:284px"></div><div class="cell" style="left:496px;width:52px"></div><div class="cell" style="left:548px;width:110px"></div><div class="cell" style="left:658px;width:110px"></div><div class="cell we" style="left:768px;width:52px"></div><div class="cell we" style="left:820px;width:52px"></div><div class="cell" style="left:872px;width:52px"></div><div class="cell" style="left:924px;width:52px"></div><div class="cell" style="left:976px;width:52px"></div><div class="cell" style="left:1028px;width:52px"></div><div class="cell" style="left:1080px;width:52px"></div><div class="cell we" style="left:1132px;width:52px"></div><div class="cell we" style="left:1184px;width:52px"></div><div class="cell" style="left:1236px;width:52px"></div><div class="cell" style="left:1288px;width:52px"></div><div class="cell" style="left:1340px;width:52px"></div><div class="cell" style="left:1392px;width:52px"></div><div class="cell" style="left:1444px;width:52px"></div></div><div class="todayline" style="left:0px"></div><div class="bar" data-proj="" style="left:2px;width:764px;top:7px;--c:#2E86C1;--p:transparent" title="Локація Castle — 40г · 06.07–10.07 · 06.07: 8г, 07.07: 8г, 08.07: 8г, 09.07: 8г, 10.07: 8г"><span class="bl">Локація Castle</span><span class="br">40г</span></div></div></div><div class="prow" style="height:52px"><div class="namecol-wrap" style="height:52px"><div class="av" style="background:#0ea5e9">ЯР</div><div class="pmeta"><div class="pn">Ярослав</div><div class="pr">3D Lead / концепти</div></div><div class="ph">12г</div></div><div class="track" style="width:1496px;height:52px"><div class="bg" style="width:1496px"><div class="cell" style="left:0px;width:212px"></div><div class="cell" style="left:212px;width:284px"></div><div class="cell" style="left:496px;width:52px"></div><div class="cell" style="left:548px;width:110px"></div><div class="cell" style="left:658px;width:110px"></div><div class="cell we" style="left:768px;width:52px"></div><div class="cell we" style="left:820px;width:52px"></div><div class="cell" style="left:872px;width:52px"></div><div class="cell" style="left:924px;width:52px"></div><div class="cell" style="left:976px;width:52px"></div><div class="cell" style="left:1028px;width:52px"></div><div class="cell" style="left:1080px;width:52px"></div><div class="cell we" style="left:1132px;width:52px"></div><div class="cell we" style="left:1184px;width:52px"></div><div class="cell" style="left:1236px;width:52px"></div><div class="cell" style="left:1288px;width:52px"></div><div class="cell" style="left:1340px;width:52px"></div><div class="cell" style="left:1392px;width:52px"></div><div class="cell" style="left:1444px;width:52px"></div></div><div class="todayline" style="left:0px"></div><div class="bar" data-proj="" style="left:2px;width:208px;top:7px;--c:#E8743B;--p:transparent" title="Концепти персонажів — 4г · 06.07–06.07 · 06.07: 4г"><span class="bl">Концепти персонажів</span><span class="br">4г</span></div><div class="bar" data-proj="" style="left:214px;width:280px;top:7px;--c:#E8743B;--p:transparent" title="Концепти персонажів (доробка) — 8г · 07.07–07.07 · 07.07: 8г"><span class="bl">Концепти персонажів (доробка)</span><span class="br">8г</span></div></div></div><div class="prow" style="height:52px"><div class="namecol-wrap" style="height:52px"><div class="av" style="background:#f59e0b">Д3</div><div class="pmeta"><div class="pn">Діма 3д</div><div class="pr">3D моделінг</div></div><div class="ph">32г</div></div><div class="track" style="width:1496px;height:52px"><div class="bg" style="width:1496px"><div class="cell" style="left:0px;width:212px"></div><div class="cell" style="left:212px;width:284px"></div><div class="cell" style="left:496px;width:52px"></div><div class="cell" style="left:548px;width:110px"></div><div class="cell" style="left:658px;width:110px"></div><div class="cell we" style="left:768px;width:52px"></div><div class="cell we" style="left:820px;width:52px"></div><div class="cell" style="left:872px;width:52px"></div><div class="cell" style="left:924px;width:52px"></div><div class="cell" style="left:976px;width:52px"></div><div class="cell" style="left:1028px;width:52px"></div><div class="cell" style="left:1080px;width:52px"></div><div class="cell we" style="left:1132px;width:52px"></div><div class="cell we" style="left:1184px;width:52px"></div><div class="cell" style="left:1236px;width:52px"></div><div class="cell" style="left:1288px;width:52px"></div><div class="cell" style="left:1340px;width:52px"></div><div class="cell" style="left:1392px;width:52px"></div><div class="cell" style="left:1444px;width:52px"></div></div><div class="todayline" style="left:0px"></div><div class="bar" data-proj="" style="left:2px;width:654px;top:7px;--c:#2E86C1;--p:transparent" title="Локація Ship — 32г · 06.07–09.07 · 06.07: 8г, 07.07: 8г, 08.07: 8г, 09.07: 8г"><span class="bl">Локація Ship</span><span class="br">32г</span></div><div class="unavail" style="left:658px;width:110px" title="вихідний 10.07"></div><div class="unavail" style="left:872px;width:52px" title="вихідний 13.07"></div><div class="unavail" style="left:924px;width:52px" title="вихідний 14.07"></div><div class="unavail" style="left:976px;width:52px" title="вихідний 15.07"></div><div class="unavail" style="left:1028px;width:52px" title="вихідний 16.07"></div><div class="unavail" style="left:1080px;width:52px" title="вихідний 17.07"></div><div class="unavail" style="left:1236px;width:52px" title="вихідний 20.07"></div></div></div><div class="prow" style="height:52px"><div class="namecol-wrap" style="height:52px"><div class="av" style="background:#10b981">О3</div><div class="pmeta"><div class="pn">Остап 3д</div><div class="pr">3D моделінг</div></div><div class="ph">40г</div></div><div class="track" style="width:1496px;height:52px"><div class="bg" style="width:1496px"><div class="cell" style="left:0px;width:212px"></div><div class="cell" style="left:212px;width:284px"></div><div class="cell" style="left:496px;width:52px"></div><div class="cell" style="left:548px;width:110px"></div><div class="cell" style="left:658px;width:110px"></div><div class="cell we" style="left:768px;width:52px"></div><div class="cell we" style="left:820px;width:52px"></div><div class="cell" style="left:872px;width:52px"></div><div class="cell" style="left:924px;width:52px"></div><div class="cell" style="left:976px;width:52px"></div><div class="cell" style="left:1028px;width:52px"></div><div class="cell" style="left:1080px;width:52px"></div><div class="cell we" style="left:1132px;width:52px"></div><div class="cell we" style="left:1184px;width:52px"></div><div class="cell" style="left:1236px;width:52px"></div><div class="cell" style="left:1288px;width:52px"></div><div class="cell" style="left:1340px;width:52px"></div><div class="cell" style="left:1392px;width:52px"></div><div class="cell" style="left:1444px;width:52px"></div></div><div class="todayline" style="left:0px"></div><div class="bar" data-proj="" style="left:2px;width:764px;top:7px;--c:#2E86C1;--p:transparent" title="Локація Ship — 40г · 06.07–10.07 · 06.07: 8г, 07.07: 8г, 08.07: 8г, 09.07: 8г, 10.07: 8г"><span class="bl">Локація Ship</span><span class="br">40г</span></div></div></div><div class="prow" style="height:52px"><div class="namecol-wrap" style="height:52px"><div class="av" style="background:#ef4444">ДА</div><div class="pmeta"><div class="pn">Діма аніматор</div><div class="pr">Аніматор</div></div><div class="ph">24г</div></div><div class="track" style="width:1496px;height:52px"><div class="bg" style="width:1496px"><div class="cell" style="left:0px;width:212px"></div><div class="cell" style="left:212px;width:284px"></div><div class="cell" style="left:496px;width:52px"></div><div class="cell" style="left:548px;width:110px"></div><div class="cell" style="left:658px;width:110px"></div><div class="cell we" style="left:768px;width:52px"></div><div class="cell we" style="left:820px;width:52px"></div><div class="cell" style="left:872px;width:52px"></div><div class="cell" style="left:924px;width:52px"></div><div class="cell" style="left:976px;width:52px"></div><div class="cell" style="left:1028px;width:52px"></div><div class="cell" style="left:1080px;width:52px"></div><div class="cell we" style="left:1132px;width:52px"></div><div class="cell we" style="left:1184px;width:52px"></div><div class="cell" style="left:1236px;width:52px"></div><div class="cell" style="left:1288px;width:52px"></div><div class="cell" style="left:1340px;width:52px"></div><div class="cell" style="left:1392px;width:52px"></div><div class="cell" style="left:1444px;width:52px"></div></div><div class="todayline" style="left:0px"></div><div class="bar" data-proj="" style="left:550px;width:216px;top:7px;--c:#8E44AD;--p:transparent" title="Анімації персонажів — 24г · 09.07–13.07 · 09.07: 8г, 10.07: 8г, 13.07: 8г"><span class="bl">Анімації персонажів</span></div><div class="bar" data-proj="" style="left:874px;width:48px;top:7px;--c:#8E44AD;--p:transparent" title="Анімації персонажів — 24г · 09.07–13.07 · 09.07: 8г, 10.07: 8г, 13.07: 8г"><span class="br">24г</span></div><div class="unavail" style="width:548px"></div></div></div>
+  </div>
+</div>
+<div class="summary">
+  <div class="card"><h3>Завантаження по людях</h3>
+    <table><tr><td><b>Людина</b></td><td><b>Роль</b></td><td><b>Годин</b></td><td><b>Кінець</b></td></tr>
+    <tr><td>Paul</td><td>3D Lead</td><td>40 г</td><td>10.07</td></tr><tr><td>Ярослав</td><td>3D Lead / концепти</td><td>12 г</td><td>07.07</td></tr><tr><td>Діма 3д</td><td>3D моделінг</td><td>32 г</td><td>09.07</td></tr><tr><td>Остап 3д</td><td>3D моделінг</td><td>40 г</td><td>10.07</td></tr><tr><td>Діма аніматор</td><td>Аніматор</td><td>24 г</td><td>13.07</td></tr></table>
+  </div>
+  <div class="card"><h3>Контроль строків</h3>
+    <div>Контент готовий: <span class="big">13.07</span></div>
+    <div style="margin:4px 0">Реліз: <b>31.07</b></div>
+    <div>Буфер на ревʼю сторів: <span class="big ok">18 дн.</span></div>
+  </div>
+  <div class="card"><h3>Як правити</h3>
+    <div class="note">Джерело правди — <code>timeline.json</code>. Задачі пакуються в дні автоматично
+      (порядок у JSON = порядок виконання; <code>start</code> — якір). Посунути = змінити
+      порядок/години/якір → перегенерувати. Або скажи мені «посунь X» / «додай задачу Z».</div>
+  </div>
+</div>
+<script>
+function togglePak(b){
+  b.classList.toggle('off');
+  var off={};
+  document.querySelectorAll('.pakbtn.off').forEach(function(x){ off[x.dataset.proj]=1; });
+  document.querySelectorAll('.bar[data-proj]').forEach(function(bar){
+    bar.classList.toggle('dim', !!off[bar.dataset.proj]);
+  });
+}
+</script>
+</html>
