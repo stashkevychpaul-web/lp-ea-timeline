@@ -116,5 +116,12 @@ function togglePak(b){
     bar.classList.toggle('dim', !!off[bar.dataset.proj]);
   });
 }
+function scrollToToday(){
+  var w=document.querySelector('.tlwrap'), t=document.querySelector('.todayline');
+  if(!w||!t) return;
+  var wr=w.getBoundingClientRect(), tr=t.getBoundingClientRect();
+  w.scrollLeft += (tr.left - wr.left) - 230;
+}
+window.addEventListener('load', scrollToToday);
 </script>
 </html>
